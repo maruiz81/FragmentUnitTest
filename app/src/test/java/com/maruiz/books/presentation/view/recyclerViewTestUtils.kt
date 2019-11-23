@@ -10,24 +10,12 @@ import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers
 import coil.ImageLoader
 import coil.request.LoadRequest
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.verify
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.core.Is
-
-fun withCollapsibleToolbarTitle(textMatcher: Matcher<String>): Matcher<Any> = object :
-    BoundedMatcher<Any, CollapsingToolbarLayout>(CollapsingToolbarLayout::class.java) {
-    override fun describeTo(description: Description) {
-        description.appendText("with toolbar title: ")
-        textMatcher.describeTo(description)
-    }
-
-    override fun matchesSafely(toolbarLayout: CollapsingToolbarLayout): Boolean =
-        textMatcher.matches(toolbarLayout.title)
-}
 
 fun atPosition(position: Int, itemMatcher: Matcher<View>, @IdRes targetViewId: Int): Matcher<View> =
     object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
@@ -47,8 +35,7 @@ fun atPosition(position: Int, itemMatcher: Matcher<View>, @IdRes targetViewId: I
 fun imageAtPosition(
     position: Int,
     urlImage: String,
-    imageLoader: ImageLoader,
-    @IdRes targetViewId: Int
+    imageLoader: ImageLoader
 ): Matcher<View> =
     object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
         override fun describeTo(description: Description?) {

@@ -36,20 +36,26 @@ class BookListFragment : Fragment() {
 
         setupRecycler()
 
-        booksViewModel.observeBooks().observe(this.viewLifecycleOwner, Observer {
-            adapter.renderables = it
-        })
-        booksViewModel.observeFailure().observe(this.viewLifecycleOwner, Observer {
-            Toast.makeText(context, R.string.error, Toast.LENGTH_LONG).show()
-        })
-        booksViewModel.requestBooks()
+        addViewModelObservers()
+    }
 
-        booksViewModel.navigateToDetail().observeEvent(this) {
-            get<NavController> { parametersOf(this) }.navigate(
-                BookListFragmentDirections.listToDetail(
-                    it
+    private fun addViewModelObservers() {
+        booksViewModel.run {
+            observeBooks().observe(viewLifecycleOwner, Observer {
+                adapter.renderables = it
+            })
+            observeFailure().observe(viewLifecycleOwner, Observer {
+                Toast.makeText(context, R.string.error, Toast.LENGTH_LONG).show()
+            })
+            requestBooks()
+
+            navigateToDetail().observeEvent(viewLifecycleOwner) {
+                get<NavController> { parametersOf(this) }.navigate(
+                    BookListFragmentDirections.listToDetail(
+                        it
+                    )
                 )
-            )
+            }
         }
     }
 

@@ -151,8 +151,7 @@ class BookListFragmentTest : AutoCloseKoinTest() {
                             imageAtPosition(
                                 index,
                                 item.image,
-                                imageLoader,
-                                R.id.image
+                                imageLoader
                             )
                         )
                     )
