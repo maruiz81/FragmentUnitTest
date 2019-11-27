@@ -4,14 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import arrow.core.None
-import arrow.fx.extensions.io.unsafeRun.runNonBlocking
-import arrow.unsafe
 import com.maruiz.books.data.model.BookModel
 import com.maruiz.books.domain.GetBooks
 import com.maruiz.books.presentation.presentationmodel.BookPresentationModel
 import com.maruiz.books.presentation.utils.Event
 
-class BooksViewModel(private val getBooks: GetBooks) : BaseViewModel(getBooks) {
+class BooksViewModel(private val getBooks: GetBooks) : BaseViewModel() {
 
     private val books = MutableLiveData<List<BookPresentationModel>>()
     fun observeBooks(): LiveData<List<BookPresentationModel>> = books
@@ -19,11 +17,8 @@ class BooksViewModel(private val getBooks: GetBooks) : BaseViewModel(getBooks) {
     private val navigateToDetail = MutableLiveData<Event<BookPresentationModel>>()
     fun navigateToDetail(): LiveData<Event<BookPresentationModel>> = navigateToDetail
 
-    fun requestBooks() = unsafe {
-        runNonBlocking({ getBooks(None, viewModelScope.coroutineContext) }) {
-            it.fold(::handleFailure, ::handleSuccess)
-        }
-    }
+    fun requestBooks() =
+        getBooks(None, viewModelScope) { it.fold(::handleFailure, ::handleSuccess) }
 
     fun bookSelected(book: BookPresentationModel) {
         navigateToDetail.value = Event(book)

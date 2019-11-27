@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import arrow.integrations.retrofit.adapter.CallKindAdapterFactory
 import coil.ImageLoaderBuilder
+import com.maruiz.books.data.repository.BookRepository
 import com.maruiz.books.data.services.BookApi
 import com.maruiz.books.domain.GetBooks
 import com.maruiz.books.presentation.adapter.BooksAdapter
@@ -31,6 +32,7 @@ val appModule = module {
             .build()
     }
     single { get<Retrofit>().create(BookApi::class.java) }
+    single<BookRepository> { BookRepository.Network(get()) }
     factory { GetBooks(get()) }
     factory { BooksAdapter(get()) }
     viewModel { BooksViewModel(get()) }

@@ -29,14 +29,15 @@ import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.loadKoinModules
+import org.koin.core.context.stopKoin
 import org.koin.dsl.module
-import org.koin.test.AutoCloseKoinTest
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoRule
@@ -47,7 +48,7 @@ import org.robolectric.annotation.Config
 
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [Build.VERSION_CODES.P])
-class BookListFragmentTest : AutoCloseKoinTest() {
+class BookListFragmentTest {
     @get:Rule
     val rule: MockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS)
 
@@ -72,6 +73,11 @@ class BookListFragmentTest : AutoCloseKoinTest() {
                 factory { imageLoader }
             }
         )
+    }
+
+    @After
+    fun autoClose() {
+        stopKoin()
     }
 
     @Test(expected = Test.None::class)
@@ -204,8 +210,8 @@ class BookListFragmentTest : AutoCloseKoinTest() {
         whenever(viewModel.navigateToDetail()).thenReturn(navigateLiveData)
     }
 
-    private fun getBookList(itemNumber: Int): List<BookPresentationModel> =
-        (1..itemNumber).map {
+    private fun getBookList(size: Int): List<BookPresentationModel> =
+        (1 until size).map {
             BookPresentationModel(
                 "Book $it", "Author $it", "Short Synopsis $it",
                 "Synopsis $it", "image url $it"

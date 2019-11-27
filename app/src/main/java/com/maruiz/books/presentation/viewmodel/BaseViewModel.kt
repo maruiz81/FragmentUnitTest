@@ -3,21 +3,15 @@ package com.maruiz.books.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.maruiz.books.domain.UseCase
+import com.maruiz.books.data.error.Failure
 
-abstract class BaseViewModel(private vararg val usecases: UseCase<*, *>) : ViewModel() {
+abstract class BaseViewModel : ViewModel() {
 
-    private val failure = MutableLiveData<String>()
+    private val failure = MutableLiveData<Failure>()
 
-    fun observeFailure(): LiveData<String> = failure
+    fun observeFailure(): LiveData<Failure> = failure
 
-    protected fun handleFailure(failure: Throwable) {
-        this.failure.value = failure.message ?: ""
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-
-        usecases.forEach { it.cancel() }
+    protected fun handleFailure(failure: Failure) {
+        this.failure.value = failure
     }
 }

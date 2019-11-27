@@ -50,7 +50,7 @@ class BookListFragment : Fragment() {
             requestBooks()
 
             navigateToDetail().observeEvent(viewLifecycleOwner) {
-                get<NavController> { parametersOf(this) }.navigate(
+                get<NavController> { parametersOf(this@BookListFragment) }.navigate(
                     BookListFragmentDirections.listToDetail(
                         it
                     )

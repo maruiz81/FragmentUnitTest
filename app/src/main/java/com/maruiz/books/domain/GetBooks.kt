@@ -1,11 +1,12 @@
 package com.maruiz.books.domain
 
+import arrow.core.Either
 import arrow.core.None
-import arrow.fx.IO
-import com.maruiz.books.data.extensions.makeCall
+import com.maruiz.books.data.error.Failure
 import com.maruiz.books.data.model.BookModel
-import com.maruiz.books.data.services.BookApi
+import com.maruiz.books.data.repository.BookRepository
 
-class GetBooks(private val bookApi: BookApi) : UseCase<List<BookModel>, None>() {
-    override fun run(params: None): IO<List<BookModel>> = bookApi.getBooks().makeCall(emptyList())
+class GetBooks(private val bookRepository: BookRepository) : UseCase<List<BookModel>, None>() {
+    override suspend fun run(params: None): Either<Failure, List<BookModel>> =
+        bookRepository.getBooks()
 }
