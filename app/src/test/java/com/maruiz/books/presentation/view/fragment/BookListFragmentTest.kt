@@ -18,6 +18,7 @@ import coil.DefaultRequestOptions
 import coil.ImageLoader
 import coil.util.CoilContentProvider
 import com.maruiz.books.R
+import com.maruiz.books.data.error.Failure
 import com.maruiz.books.presentation.adapter.BooksAdapter
 import com.maruiz.books.presentation.presentationmodel.BookPresentationModel
 import com.maruiz.books.presentation.utils.Event
@@ -104,7 +105,7 @@ class BookListFragmentTest {
 
         whenever(imageLoader.defaults).thenReturn(DefaultRequestOptions())
 
-        val itemNumber = 10
+        val itemNumber = 5
         books.value = getBookList(itemNumber)
 
         onView(withId(R.id.recyclerView)).check(RecyclerViewItemCountAssertion(itemNumber))
@@ -202,7 +203,7 @@ class BookListFragmentTest {
 
     private fun setupObservers(
         booksLiveData: MutableLiveData<List<BookPresentationModel>> = MutableLiveData(),
-        failureLiveData: MutableLiveData<String> = MutableLiveData(),
+        failureLiveData: MutableLiveData<Failure> = MutableLiveData(),
         navigateLiveData: MutableLiveData<Event<BookPresentationModel>> = MutableLiveData()
     ) {
         whenever(viewModel.observeBooks()).thenReturn(booksLiveData)
@@ -211,7 +212,7 @@ class BookListFragmentTest {
     }
 
     private fun getBookList(size: Int): List<BookPresentationModel> =
-        (1 until size).map {
+        (1..size).map {
             BookPresentationModel(
                 "Book $it", "Author $it", "Short Synopsis $it",
                 "Synopsis $it", "image url $it"

@@ -51,8 +51,10 @@ dependencies {
 
     implementation 'io.coil-kt:coil:0.8.0'
 
-    implementation 'com.squareup.retrofit2:retrofit:2.6.2'
-    implementation 'com.squareup.retrofit2:converter-moshi:2.6.2'
+    def retrofit_version = "2.6.2"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
+    implementation "com.squareup.retrofit2:retrofit-mock:$retrofit_version"
     implementation 'com.squareup.moshi:moshi:1.9.1'
     implementation 'com.squareup.moshi:moshi-kotlin:1.9.1'
     implementation 'org.koin:koin-android:2.0.1'
@@ -74,8 +76,7 @@ dependencies {
     def arrow_version = "0.10.2"
     implementation "io.arrow-kt:arrow-fx:$arrow_version"
     implementation "io.arrow-kt:arrow-syntax:$arrow_version"
-    implementation "io.arrow-kt:arrow-integration-retrofit-adapter:$arrow_version"
-    kapt "io.arrow-kt:arrow-meta:$arrow_version"
+    implementation "io.arrow-kt:arrow-fx:$arrow_version"
 
     testImplementation 'android.arch.core:core-testing:1.1.1'
     testImplementation 'androidx.test:core:1.2.0'
@@ -84,6 +85,7 @@ dependencies {
     testImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     testImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.amshove.kluent:kluent-android:1.57'
     testImplementation 'org.koin:koin-test:2.0.1'

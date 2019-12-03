@@ -1,4 +1,4 @@
-package com.maruiz.books.domain
+package com.maruiz.books.domain.usecases
 
 import arrow.core.Either
 import com.maruiz.books.data.error.Failure

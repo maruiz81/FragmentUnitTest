@@ -1,10 +1,15 @@
 package com.maruiz.books.presentation.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import arrow.fx.IO
-import com.maruiz.books.data.model.BookModel
-import com.maruiz.books.domain.GetBooks
-import com.maruiz.books.presentation.di.appModule
+import arrow.core.Either
+import arrow.core.Left
+import arrow.core.Right
+import com.maruiz.books.data.di.dataModule
+import com.maruiz.books.data.error.Failure
+import com.maruiz.books.data.getBookListDomain
+import com.maruiz.books.domain.model.BookModelDomainModel
+import com.maruiz.books.domain.usecases.GetBooks
+import com.maruiz.books.presentation.di.presentationModule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -21,7 +26,6 @@ import org.koin.test.inject
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.internal.verification.Times
-import java.lang.Exception
 
 @RunWith(JUnit4::class)
 class BooksViewModelTest : AutoCloseKoinTest() {
@@ -39,7 +43,8 @@ class BooksViewModelTest : AutoCloseKoinTest() {
         startKoin {
             modules(
                 listOf(
-                    appModule,
+                    dataModule,
+                    presentationModule,
                     module(override = true) {
                         factory { getBooks }
                     }
@@ -49,19 +54,33 @@ class BooksViewModelTest : AutoCloseKoinTest() {
 
     @Test
     fun `verify useCase executed`() {
-        whenever(getBooks.invoke(any(), any())).thenReturn(IO.just(emptyList()))
         booksViewModel.requestBooks()
 
-        verify(getBooks, Times(1)).invoke(any(), any())
+        verify(getBooks, Times(1)).invoke(any(), any(), any())
+    }
+
+    @Test
+    fun `get a list of books empty`() {
+        whenever(getBooks.invoke(any(), any(), any())).thenAnswer { arg ->
+            arg.getArgument<(Either<Failure, List<BookModelDomainModel>>) -> Unit>(2)(
+                Right(
+                    emptyList()
+                )
+            )
+        }
+
+        booksViewModel.requestBooks()
+
+        booksViewModel.observeBooks().value!!.size shouldEqual 0
     }
 
     @Test
     fun `get properly list of ten Books`() {
         val itemsNumber = 10
-        val bookList = getBookList(itemsNumber)
-        whenever(getBooks.invoke(any(), any())).thenReturn(
-            IO.just(bookList)
-        )
+        val bookList = getBookListDomain(itemsNumber)
+        whenever(getBooks.invoke(any(), any(), any())).thenAnswer { arg ->
+            arg.getArgument<(Either<Failure, List<BookModelDomainModel>>) -> Unit>(2)(Right(bookList))
+        }
         booksViewModel.requestBooks()
 
         booksViewModel.observeBooks().value!!.run {
@@ -78,20 +97,14 @@ class BooksViewModelTest : AutoCloseKoinTest() {
 
     @Test
     fun `should show error when getting error from useCase`() {
-        whenever(getBooks.invoke(any(), any())).thenThrow(Exception())
+        whenever(getBooks.invoke(any(), any(), any())).thenAnswer { arg ->
+            arg.getArgument<(Either<Failure, List<BookModelDomainModel>>) -> Unit>(2)(Left(Failure.GenericError))
+        }
 
         booksViewModel.requestBooks()
 
         booksViewModel.observeFailure().value!!.run {
-
+            this shouldEqual Failure.GenericError
         }
     }
-
-    private fun getBookList(size: Int): List<BookModel> =
-        (1..size).map {
-            BookModel(
-                it, "Book $it", "Author $it", "Short Synopsis $it",
-                "Synopsis $it", "image url $it"
-            )
-        }
 }
