@@ -19,7 +19,7 @@ import com.maruiz.books.presentation.view.withCollapsibleToolbarTitle
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import junit.framework.Assert.assertEquals
+import org.amshove.kluent.shouldEqual
 import org.hamcrest.core.Is.`is`
 import org.junit.After
 import org.junit.Before
@@ -76,7 +76,8 @@ class BookDetailFragmentTest {
     fun `show the data from the arguments`() {
         val bookParameter = BookPresentationModel(
             title = "Salem's lot",
-            image = "image url", synopsis = "This is the synopsis to"
+            image = "image url",
+            synopsis = "This is the synopsis to"
         )
         sut = launchFragmentInContainer<BookDetailFragment>(themeResId = R.style.AppTheme,
             fragmentArgs = Bundle()
@@ -85,7 +86,7 @@ class BookDetailFragmentTest {
 
         argumentCaptor<LoadRequest>().apply {
             verify(imageLoader).load(capture())
-            assertEquals(firstValue.data, bookParameter.image)
+            firstValue.data shouldEqual bookParameter.image
         }
 
         onView(isAssignableFrom(CollapsingToolbarLayout::class.java)).check(

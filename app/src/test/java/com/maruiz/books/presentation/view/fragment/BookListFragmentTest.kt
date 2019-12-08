@@ -30,8 +30,8 @@ import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import org.amshove.kluent.shouldEqual
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -193,10 +193,7 @@ class BookListFragmentTest {
 
             argumentCaptor<NavDirections>().apply {
                 verify(navController, atLeastOnce()).navigate(capture())
-                assertEquals(
-                    BookListFragmentDirections.listToDetail(book),
-                    lastValue
-                )
+                BookListFragmentDirections.listToDetail(book) shouldEqual lastValue
             }
         }
     }
