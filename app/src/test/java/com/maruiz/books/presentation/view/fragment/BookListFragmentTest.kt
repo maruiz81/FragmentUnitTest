@@ -125,22 +125,25 @@ class BookListFragmentTest {
 
         val books = getBookList(10).also { bookList.value = it }
 
-        RecyclerViewInteraction.onRecyclerView<BookPresentationModel>(withId(R.id.recyclerView))
-            .withItems(books)
+        RecyclerViewInteraction(withId(R.id.recyclerView), books)
             .check { book, view: View, exception: NoMatchingViewException? ->
-                matches(withText(book.title)).check(
-                    view.findViewById<TextView>(R.id.title),
-                    exception
-                )
-                matches(withText(book.author)).check(
-                    view.findViewById<TextView>(R.id.author),
-                    exception
-                )
-                matches(withText(book.shortSynopsis)).check(
-                    view.findViewById<TextView>(R.id.synopsis),
-                    exception
-                )
-                onView(withText(R.id.image)).check(ImageLoadingAssertion(book.image, imageLoader))
+                matches(withText(book.title))
+                    .check(
+                        view.findViewById<TextView>(R.id.title),
+                        exception
+                    )
+                matches(withText(book.author))
+                    .check(
+                        view.findViewById<TextView>(R.id.author),
+                        exception
+                    )
+                matches(withText(book.shortSynopsis))
+                    .check(
+                        view.findViewById<TextView>(R.id.synopsis),
+                        exception
+                    )
+                onView(withText(R.id.image))
+                    .check(ImageLoadingAssertion(book.image, imageLoader))
             }
     }
 
