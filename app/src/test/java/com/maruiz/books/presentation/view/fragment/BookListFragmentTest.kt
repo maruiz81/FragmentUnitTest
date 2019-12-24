@@ -1,16 +1,18 @@
 package com.maruiz.books.presentation.view.fragment
 
 import android.os.Build
+import android.view.View
+import android.widget.TextView
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -22,9 +24,9 @@ import com.maruiz.books.data.error.Failure
 import com.maruiz.books.presentation.adapter.BooksAdapter
 import com.maruiz.books.presentation.presentationmodel.BookPresentationModel
 import com.maruiz.books.presentation.utils.Event
-import com.maruiz.books.presentation.view.RecyclerViewItemCountAssertion
-import com.maruiz.books.presentation.view.atPosition
-import com.maruiz.books.presentation.view.imageAtPosition
+import com.maruiz.books.presentation.view.recyclerview.ImageLoadingAssertion
+import com.maruiz.books.presentation.view.recyclerview.RecyclerViewInteraction
+import com.maruiz.books.presentation.view.recyclerview.RecyclerViewItemCountAssertion
 import com.maruiz.books.presentation.viewmodel.BooksViewModel
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.atLeastOnce
@@ -121,47 +123,24 @@ class BookListFragmentTest {
 
         whenever(imageLoader.defaults).thenReturn(DefaultRequestOptions())
 
-        getBookList(10)
-            .also { bookList.value = it }
-            .forEachIndexed { index, item ->
-                onView(withId(R.id.recyclerView))
-                    .perform(scrollToPosition<BooksAdapter.ViewHolder>(index))
-                    .check(
-                        matches(
-                            atPosition(
-                                index,
-                                withText(item.title),
-                                R.id.title
-                            )
-                        )
-                    )
-                    .check(
-                        matches(
-                            atPosition(
-                                index,
-                                withText(item.author),
-                                R.id.author
-                            )
-                        )
-                    )
-                    .check(
-                        matches(
-                            atPosition(
-                                index,
-                                withText(item.shortSynopsis),
-                                R.id.synopsis
-                            )
-                        )
-                    )
-                    .check(
-                        matches(
-                            imageAtPosition(
-                                index,
-                                item.image,
-                                imageLoader
-                            )
-                        )
-                    )
+        val books = getBookList(10).also { bookList.value = it }
+
+        RecyclerViewInteraction.onRecyclerView<BookPresentationModel>(withId(R.id.recyclerView))
+            .withItems(books)
+            .check { book, view: View, exception: NoMatchingViewException? ->
+                matches(withText(book.title)).check(
+                    view.findViewById<TextView>(R.id.title),
+                    exception
+                )
+                matches(withText(book.author)).check(
+                    view.findViewById<TextView>(R.id.author),
+                    exception
+                )
+                matches(withText(book.shortSynopsis)).check(
+                    view.findViewById<TextView>(R.id.synopsis),
+                    exception
+                )
+                onView(withText(R.id.image)).check(ImageLoadingAssertion(book.image, imageLoader))
             }
     }
 
